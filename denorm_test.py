@@ -8,8 +8,10 @@
 # Copyright:   (c) sbhar 2017
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
+from sklearn import svm
+from sklearn.externals import joblib
 
-def main():
+def getTestData():
     filename="sub_test.csv"
     f_train=open(filename,"r")
     lines=f_train.readlines()
@@ -38,7 +40,13 @@ def main():
     #for each in testDataList:
         #print each
     f_train.close()
+    return testDataList
 
+def main():
+    testDataSet=getTestData()
+    clf = joblib.load('svm_hyperplane.txt')
+    print (clf.predict(testDataSet))
+    
 
 if __name__ == '__main__':
     main()
