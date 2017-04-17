@@ -7,6 +7,9 @@ Created on Mon Apr 10 00:07:34 2017
 
 from sklearn import svm
 from sklearn.externals import joblib
+import os
+
+basepath = "/home/ubuntu/ML-model/"
 
 def getTrainingData():
     filename="sub_train.csv"
@@ -24,6 +27,8 @@ def getTrainingData():
         line=line[:len(line)-1]
         tokens=line.split(',')
         label=tokens[len(tokens)-1]
+	label = label[:len(label)-1]
+	#print label, label[:len(label)-1]
         if label==trainingLabel and len(currentRow)!=900:
             currentRow.extend(tokens[1:len(tokens)-1])
         else:
@@ -51,7 +56,9 @@ def main():
     testData=[]
     testData.append(trainingFeatures[0])
     print (clf.predict(testData))
-    joblib.dump(clf, 'svm_hyperplane.txt') 
+    trainingParamPath = os.path.join(basepath,"Training_Parameters","svm_hyperplane.txt")
+    print trainingParamPath
+    joblib.dump(clf, trainingParamPath) 
     
     #print (clf.predict([[2., 2.]]))
 
