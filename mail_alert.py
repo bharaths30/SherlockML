@@ -32,7 +32,7 @@ def sendMail(toMailId, name,latitude, longitude, cityName):
 
     bodyText='''Hi '''+name+''',
 
-         I detected some suspicious activity in your phone. In case it is lost, it is at Latitude '''+latitude+''', Longitude '''+longitude+''', City Name'''+cityName+'''.
+         I detected some suspicious activity in your phone. In case it is lost, it is at Latitude '''+str(latitude)+''', Longitude '''+str(longitude)+''', in the city of '''+cityName+'''. Good luck.
 
 Regards,
 Sherlock'''

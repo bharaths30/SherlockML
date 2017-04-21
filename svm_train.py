@@ -8,6 +8,7 @@ Created on Mon Apr 10 00:07:34 2017
 from sklearn import svm
 from sklearn.externals import joblib
 import os
+from sklearn.model_selection import cross_val_score
 
 basepath = "/home/ubuntu/ML-model/"
 
@@ -53,13 +54,15 @@ def main():
     (trainingFeatures,labels)=getTrainingData()
     clf = svm.SVC()
     clf.fit(trainingFeatures, labels)
+    scores = cross_val_score(clf, trainingFeatures, labels, cv=5)
+    print scores
     testData=[]
     testData.append(trainingFeatures[0])
     print (clf.predict(testData))
     trainingParamPath = os.path.join(basepath,"Training_Parameters","svm_hyperplane.txt")
     print trainingParamPath
-    joblib.dump(clf, trainingParamPath) 
-    
+    joblib.dump(clf, trainingParamPath)
+
     #print (clf.predict([[2., 2.]]))
 
 if __name__ == '__main__':
