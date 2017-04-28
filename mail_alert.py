@@ -21,7 +21,7 @@ def sendMail(toMailId, name,latitude, longitude, cityName):
     s=smtplib.SMTP("smtp.gmail.com",587)
     s.ehlo()
     s.starttls()
-    pwd='vamsirocks'
+    pwd=#some random password
     s.login(sender,pwd)
 
 
