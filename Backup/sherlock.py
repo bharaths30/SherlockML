@@ -41,7 +41,10 @@ def hello_world():
 def usercheck():
 	req_json = request.get_json()
 	e_mail = str(req_json['email'])
-	g.cursor.execute("SELECT password FROM users WHERE email LIKE %s",([e_mail]))
+	authquery = "SELECT password FROM users WHERE email LIKE " +"\"" +e_mail +"\";"
+	print authquery
+	g.cursor.execute(authquery)
+	#g.cursor.execute("SELECT password FROM users WHERE email LIKE %s",([e_mail]))
 	# g.cursor.execute("SELECT password FROM users WHERE email='gvk@gmail.com'")
 	try:
 		value = g.cursor.fetchone()
@@ -63,14 +66,18 @@ def usercheck():
 @app.route('/registeruserprofile',methods=['POST'])
 def register():
 	req_json = request.get_json()
-	g.cursor.execute("SELECT COUNT(email) FROM users where email LIKE %s",([str(req_json['email'])]))
+	registerquery = "SELECT COUNT(email) FROM users where email LIKE "+"\""+str(req_json['email'])+"\";"
+	g.cursor.execute(registerquery)
 	g.conn.commit()
 	value = g.cursor.fetchone()
 	value = value[0]
 	res = False
 	print "Count reg value",value
 	if (int(value) == 0):
-		g.cursor.execute("INSERT INTO users(name,password,email,primarynumber,secondarynumber) VALUES (%s,%s,%s,%s,%s)",([str(req_json['name'])],[str(req_json['password'])],[str(req_json['email'])],[str(req_json['primaryPhone'])],[str(req_json['emergencyPhone'])]))
+		insertquery = "INSERT INTO users(name,password,email,primarynumber,secondarynumber) VALUES (" +"\"" +str(req_json['name']) +"\"," + "\"" +str(req_json['password']) +"\"," +"\"" + str(req_json['email']) +"\"," +"\"" + str(req_json['primaryPhone']) +"\"," +"\"" + str(req_json['emergencyPhone']) +"\");"
+		print insertquery
+		g.cursor.execute(insertquery)
+		#g.cursor.execute("INSERT INTO users(name,password,email,primarynumber,secondarynumber) VALUES (%s,%s,%s,%s,%s)",([str(req_json['name'])],[str(req_json['password'])],[str(req_json['email'])],[str(req_json['primaryPhone'])],[str(req_json['emergencyPhone'])]))
 		g.conn.commit()
 		res = True
 	result = {}
@@ -78,16 +85,50 @@ def register():
 	resp = Response(json.dumps(result),status=202,mimetype='application/json')
 	return resp
 
+@app.route('/updateuserprofile',methods=['PATCH'])
+def update():
+	req_json = request.get_json()
+	res = False	
+	if (req_json.has_key('password')):
+		updatequery="UPDATE users SET password = "+"\""+str(req_json['password'])+"\"" +"  WHERE email LIKE " +"\"" +str(req_json['email']) +"\";"
+		print updatequery
+		g.cursor.execute(updatequery)
+		g.conn.commit()
+		res = True
+	if (req_json.has_key('primaryPhone')):
+		updatequery="UPDATE users SET primarynumber = "+"\""+str(req_json['primaryPhone'])+"\""+" WHERE email LIKE "+"\""+str(req_json['email'])+"\";"
+		print updatequery
+		#g.cursor.execute("UPDATE users SET primarynumber = %s WHERE email LIKE  %s",([str(req_json['primaryPhone'])],[str(req_json['email'])]))
+		g.cursor.execute(updatequery)
+		g.conn.commit()
+		res = True
+	if (req_json.has_key('emergencyPhone')):
+		updatequery="UPDATE users SET secondarynumber = "+"\""+str(req_json['emergencyPhone'])+"\""+" WHERE email LIKE "+"\""+str(req_json['email'])+"\";"
+                print updatequery
+		g.cursor.execute(updatequery)
+                #g.cursor.execute("UPDATE users SET secondarynumber = %s WHERE email LIKE %s",([str(req_json['emergencyPhone'])],[str(req_json['email'])]))
+                g.conn.commit()
+                res = True
+	result = {}
+	result['updateUserProfile'] = res
+	resp = Response(json.dumps(result),status=200,mimetype='application/json')
+	return resp
 
 # TRAINING RELATED END-POINTS
 @app.route('/datatraininginsert',methods=['POST'])
 def traininginsert():
 	req_json = request.get_json()
-	print "Request",req_json
+	print "Request",req_json.keys()
 	dataPoint = req_json['oneDataPoint']
 	print "Length",len(dataPoint)
 	emailID = req_json['id']
-	gpsLocation = req_json['gpsDataObject']
+	gpsLocation={}
+	if req_json.has_key('gpsDataObject'):
+		gpsLocation = req_json['gpsDataObject']
+	else:
+		gpsLocation['latitude'] = 0.0
+		gpsLocation['longitude'] = 0.0
+		gpsLocation['cityName'] = 'unknown'
 	countQuery = "SELECT COUNT(*) FROM training_done where userId=\""+emailID+"\";"
 	g.cursor.execute(countQuery)
 	result={}
@@ -132,7 +173,7 @@ def traininginsert():
 	       	result['insertSuccess']=False
         	result['trainingComplete']=True
         	#result['anomaly']=True
-		f.close()
+		#f.close()
     	data = json.dumps(result)
     	resp = Response(data,status=200,mimetype='application/json')
     	return resp
@@ -148,7 +189,7 @@ def show():
 
 @app.route('/trainingdata',methods=['GET'])
 def trainingshow():
-	result = userq("SELECT * FROM training")
+	result = userq("SELECT DISTINCT id FROM training")
 	data = json.dumps(result)
         resp = Response(data,status=200,mimetype='application/json')
         return resp

@@ -53,13 +53,15 @@ def getTestData(filename):
 def detect(testDataSet,deviceId,emergencyEmail,firstname,latitude,longitude,cityName):
     clf = joblib.load(trainingParamPath)
     predictedData = (clf.predict(testDataSet))
+    #f=open('/home/ubuntu/sherlock/result.txt','w')
     if predictedData[0]==deviceId:
-	   #print predictedData
-	   print "false"
+	   print predictedData[0]
+	   #f.write("false,"+predictedData[0]+","+deviceId)
     else:
+	   print predictedData[0]
 	   mail_alert.sendMail(emergencyEmail,firstname,latitude,longitude,cityName)
-	   print "true"
-
+	   #f.write("true,"+predictedData[0]+","+deviceId)
+    #f.close()
 def main():
     #filename = sys.argv[1]
     testDataSetStr = sys.argv[1]

@@ -17,11 +17,11 @@ from email import Encoders
 def sendMail(toMailId, name,latitude, longitude, cityName):
     mailTo=toMailId
 
-    sender="vamsiholmes@gmail.com"
+    sender="sherlockholmesmc10@gmail.com"
     s=smtplib.SMTP("smtp.gmail.com",587)
     s.ehlo()
     s.starttls()
-    pwd='vamsirocks'
+    pwd='Mobile123!@#'
     s.login(sender,pwd)
 
 
@@ -29,10 +29,18 @@ def sendMail(toMailId, name,latitude, longitude, cityName):
     msg["From"]=sender
     msg["To"] = mailTo
     msg['Subject']="Is your phone safe?"
+    bodyText=""
+    if cityName!='unknown':
+    	bodyText='''Hi '''+name+''',
 
-    bodyText='''Hi '''+name+''',
+         I detected some suspicious activity in your phone. In case it is lost, it can be found at Latitude '''+str(latitude)+''', Longitude '''+str(longitude)+''', in the city of '''+cityName+'''. Good luck.
 
-         I detected some suspicious activity in your phone. In case it is lost, it is at Latitude '''+str(latitude)+''', Longitude '''+str(longitude)+''', in the city of '''+cityName+'''. Good luck.
+Regards,
+Sherlock'''
+    else:
+	bodyText='''Hi '''+name+''',
+
+         I detected some suspicious activity in your phone. Unfortunately, I couldn't track the location of your device. Please contact the authorities in case it is lost.
 
 Regards,
 Sherlock'''
@@ -44,7 +52,7 @@ Sherlock'''
     #s.quit()
 
 def main():
-    sendMail('sbharathkumar92@gmail.com','Bharath', '111.23', '-37.45', 'Tempe')
+    sendMail('joeljmj26@gmail.com','joel', '33.4216338', '-111.9209028', 'Tempe')
 
 if __name__ == '__main__':
     main()
